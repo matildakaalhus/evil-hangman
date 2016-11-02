@@ -1,0 +1,133 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <set>
+#include <stack>
+#include <iterator>
+using namespace std;
+
+const string ALPHABET  = "abcdefghijklmnopqrstuvwxyz";
+
+//initializes the displayed word
+string partial_word_init(string partial_word, int word_length) {
+    for (signed int i = 0; i < word_length; i++) {
+        partial_word += "_";
+    }
+    return partial_word;
+}
+
+//updates the displayed word
+string partial_word(string partial_word, int index, char letter) {
+    partial_word[index] = letter;
+    return partial_word;
+}
+
+//checks if guessed letter has already been guessed
+bool in_guess(stack<char> made_guesses, char letter) {
+    bool value = false;
+    stack<char> made_guesses_copy = made_guesses;
+    while (!(made_guesses_copy.empty()))
+      {
+         if (made_guesses_copy.top() == letter)  {
+             value = true;
+         }
+         made_guesses_copy.pop();
+      }
+    return value;
+}
+
+//asks and recieves a guess from the user
+char guess(stack<char> made_guesses) {
+    char letter;
+
+    cout << "Guess a letter: " << endl;
+    cin >> letter;
+
+    if (in_guess(made_guesses, letter)) {
+        cout << "You already guessed that!" << endl;
+        guess(made_guesses);
+    }
+    made_guesses.emplace(letter);
+    return letter;
+}
+
+//divides the available words into partitions
+
+void partition(set<string> current, set<string> dictionary, char letter, int index) {
+    for (string str:dictionary) {
+        if (!str.find(letter, index)) {
+            current.insert(str);
+            dictionary.erase(str);
+        }
+    }
+}
+
+
+
+
+
+//the game
+void hangman() {
+    unsigned int word_length;
+    cout << "Enter word length: ";
+    cin >> word_length;
+
+    unsigned int guesses;
+    cout << "Enter number of guesses: ";
+    cin >> guesses;
+
+    ifstream input;
+
+    string filename = "dictionary.txt";
+
+    input.open(filename);
+
+    set<string> dictionary;
+
+    string word;
+    while (getline(input, word)) {
+        if (word.length() == word_length) {
+            dictionary.insert(word);
+        }
+    }
+
+    stack<char> made_guesses;
+
+    char letter = guess(made_guesses);
+
+    while (true) {
+        guess(made_guesses);
+    }
+
+    set<string> former;
+    former.clear();
+    set<string> current;
+
+    for(unsigned int i = 0; i < word_length; i++){
+        partition(current, dictionary, letter, i);
+        if (current.size() > former.size()) {
+            former = current;
+            }
+        current.clear();
+    }
+
+    former = dictionary;
+
+
+    //den nya partitionen skickar så att partial_word kompletteras med nya bokstaven
+    //om inte en bokstav avslöjas så dra bort en gissning
+    //om gissningar slut, ta ett ord och avslöja lol
+    //gratulera
+    //fråga om de vill spela igen och loopa in that case
+}
+
+//main function
+int main() {
+    cout << "Welcome to Hangman." << endl;
+
+    hangman();
+
+    //se möjligheter kvar
+    //spela hangman
+    return 0;
+}
