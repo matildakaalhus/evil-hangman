@@ -1,0 +1,119 @@
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <queue>
+#include <stack>
+#include <set>
+using namespace std;
+
+const string ALPHABET  = "abcdefghijklmnopqrstuvwxyz";
+
+
+//den här är ju fel men orkar ej tänka hur man gör basic shit
+bool contains_word(stack<string> string_stack, string alt_word) {
+    bool contains = false;
+    string stack_word = string_stack.top();
+    string_stack.pop();
+    while (!string_stack.empty()) {
+        if (stack_word == alt_word) {
+            contains = true;
+        }
+    }
+    return contains;
+}
+
+
+
+void wordChain(string words) {
+    string word1;
+    string word2;
+
+    for (unsigned int i = 0; i < words.length(); i++) {
+        if (!words[i] == " ") {
+            words[i] += word1;
+        }
+        else {
+            i = words.length();
+            words - word1 - " " = word2;
+        }
+    }
+
+    ifstream input;
+
+    string filename = "dictionary.txt";
+
+    //fixa så den alltid läser in dictionary.txt utan att bråka
+    //im a computer genius
+    input.open(filename);
+
+    //fuck knows vad den här har för problem
+    //andra kommentaren vill bara understryka att jag har ingen aning om vad som händer
+    set<string> dictionary;
+
+    string word;
+    getline(input, word);
+    if (word.length() == word1.length()) {
+        dictionary.insert(word);
+    }
+
+    //create an empty queue of stacks
+    queue<stack<string>> stack_queue;
+
+    //create/add a stack containing {w1} to the queue
+    stack<string> string_stack;
+    string_stack.push(word1);
+    stack_queue.push(string_stack);
+
+    //while the queue is not empty
+    while (!stack_queue.empty()) {
+
+        //vi vill komma åt sista elementen och kunna  fippla med dem men då tar dem bort och returnerar vilket fuckar
+        //ugh this is hard to solve so i dont wanna
+        stack<string> stack1 = stack_queue.back();
+        string org_word = stack1.pop();
+        if (org_word == word2) {
+            while (!stack1.empty()) {
+                //no fucking clue why this bitch is starting up
+                cout << stack1.pop() << endl;
+            }
+        }
+        else {
+
+           //vad fan är en un/signed jag hatar det här jävla språket det är en jävla siffra
+            //i googled it like a pro and i think its about them being able to be negative or not?? anyway it stfu so its fine
+            for (unsigned int x = 0; x < org_word.length(); x++) {
+                string alt_word = org_word;
+
+               //un/signed integers får mig att skrika
+                for (unsigned int i = 0; i < ALPHABET.length(); i++) {
+                    alt_word[x] = ALPHABET[i];
+                    if (dictionary.find(alt_word)) {
+                        stack<string> new_stack = stack1;
+                        new_stack.emplace(alt_word);
+                        stack_queue.push(new_stack);
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+int main() {
+    cout << "Welcome to TDDD86 Word Chain. \n"
+            "If you give me two English words, I will transform the \n"
+            "first into the second by changing one letter at a time. \n" << endl;
+
+    cout << "Please type two words: " << endl;
+
+    string words;
+
+    cin >> words;
+
+    wordChain(words);
+
+    //separate words into 1 and 2
+
+    return 0;
+}
